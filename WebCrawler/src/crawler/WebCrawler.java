@@ -229,12 +229,13 @@ public class WebCrawler implements Runnable {
 					if (myController.isShuttingDown()) {
 						logger.info("Exiting because of controller shutdown.");
 						return;
-					}                            
+					}
                                         
-                                                             }
+                            }
                             else{
-                                
+                               int i=0; 
                               for (WebURL curURL : assignedURLs) {
+                                  i++;
                                   BasicCrawlController.isConetenReadEnable=true;
 					if (curURL != null) {
 						processPage(curURL);
@@ -244,6 +245,7 @@ public class WebCrawler implements Runnable {
 						logger.info("Exiting because of controller shutdown.");
 						return;
 					}
+                                        System.out.println("################## "+i);
 				}
 			}
                  }
@@ -310,7 +312,9 @@ public class WebCrawler implements Runnable {
                                                 //modified by Adeesha
 //						if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
 //							webURL.setDocid(docIdServer.getNewDocID(movedToUrl));
-							frontier.schedule(webURL);
+						
+                                                    frontier.schedule(webURL);
+                                                 
 //						}
                                                 // modified by Adeesha
 					}
