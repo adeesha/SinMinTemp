@@ -67,11 +67,17 @@ public class HtmlContentHandler extends DefaultHandler {
     private StringBuilder anchorText = new StringBuilder();
     private boolean isEntryStarted;
     private boolean isParagraphStarted;
+    private boolean isDateAndAuthorDiscovered;
+    private boolean isTopicDiscovered;
+    private boolean isWithinElement;
 
     public HtmlContentHandler() {
         isEntryStarted = false;
         isWithinBodyElement = false;
-        isParagraphStarted=false;
+        isParagraphStarted = false;
+        isDateAndAuthorDiscovered = false;
+        isTopicDiscovered = false;
+        isWithinElement = false;
 
         bodyText = new StringBuilder();
         outgoingUrls = new ArrayList<>();
@@ -86,22 +92,23 @@ public class HtmlContentHandler extends DefaultHandler {
 
             if (isEntryStarted) {
                 if (element == Element.P) {
-                    isParagraphStarted=true;
-                   // String pClass = attributes.getValue("");
-                   // System.out.println("sff");
+                    isParagraphStarted = true;
+                    isWithinElement = true;
+                    // String pClass = attributes.getValue("");
+                    // System.out.println("sff");
                 }
 
             }
-            if (isEntryStarted&& isParagraphStarted) {
+            if (isEntryStarted && isParagraphStarted) {
                 if (element != Element.P) {
-                    isParagraphStarted=false;
-                    isEntryStarted=false;
-                   // String pClass = attributes.getValue("");
-                   // System.out.println("sff");
+                    isParagraphStarted = false;
+                    isEntryStarted = false;
+                    // String pClass = attributes.getValue("");
+                    // System.out.println("sff");
                 }
 
             }
-            
+
 
             if (element == Element.SPAN) {
 
@@ -115,31 +122,39 @@ public class HtmlContentHandler extends DefaultHandler {
 
                     }
                 }
-                
+
                 return;
             }
         }
 
-//                if (element == Element.P) {
-//                    
-//                    isParagraphstarting=true;
-//                    
-//                    String style = attributes.getValue("style");
-//			if (style != null) {
-//                            
-//				
-//			}
-//			String pClass = attributes.getValue("class");
-//			if (pClass != null) {
-//				if(pClass.equalsIgnoreCase("leftbar_news_heading")){
-//                                
+        if (element == Element.P) {
+
+            //  isParagraphstarting=true;
+
+            String style = attributes.getValue("style");
+            if (style != null) {
+                if (style.contains("font-size:12px; color:#c28282;")) {
+                    isDateAndAuthorDiscovered = true;
+                    isWithinElement = true;
+                }
+                if (style.contains("font-size:26px;")) {
+                    isTopicDiscovered = true;
+                    isWithinElement = true;
+                }
+
+
+            }
+//                        String pClass = attributes.getValue("class");
+//                        if (pClass != null) {
+//                                if(pClass.equalsIgnoreCase("leftbar_news_heading")){
+//
 //                                isLeftbarNewsHeading=true;
-//                                
+//
 //                            }
-//			}
-//			return;
-//		}
-//                
+//                        }
+            return;
+        }
+
 
 
         /// end of modification
@@ -228,7 +243,19 @@ public class HtmlContentHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         Element element = HtmlFactory.getElement(localName);
 
+        if (isWithinElement) {
+            isWithinElement = false;
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
+               writer.newLine();
+                writer.flush();
+                writer.close();
 
+            } catch (IOException ex) {
+                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         if (element == Element.A || element == Element.AREA || element == Element.LINK) {
             anchorFlag = false;
@@ -252,22 +279,56 @@ public class HtmlContentHandler extends DefaultHandler {
     @Override
     public void characters(char ch[], int start, int length) throws SAXException {
         // modified by Adeesha	
-            if(isParagraphStarted){
-               
-                 BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter("./output1.txt",true));
-               
-                        writer.write( new String(ch, start, length)+"\n");
-                        writer.flush();
-                        writer.close();
-                        
-                         } catch (IOException ex) {
-                    Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-                //isParagraphStarted=false;
+
+
+        if (isTopicDiscovered) {
+            isTopicDiscovered = false;
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
+                writer.write("Topic   : ");
+                writer.write(new String(ch, start, length));
+
+                writer.flush();
+                writer.close();
+
+            } catch (IOException ex) {
+                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        if (isDateAndAuthorDiscovered) {
+            isDateAndAuthorDiscovered = false;
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
+                writer.write("Date and Author   : ");
+                writer.write(new String(ch, start, length));
+
+                writer.flush();
+                writer.close();
+
+            } catch (IOException ex) {
+                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if (isParagraphStarted) {
+
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
+
+                writer.write(new String(ch, start, length));
+               
+                writer.flush();
+                writer.close();
+
+            } catch (IOException ex) {
+                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            //isParagraphStarted=false;
+        }
 
         // end of modification
 
