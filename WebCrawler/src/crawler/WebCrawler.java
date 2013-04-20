@@ -233,9 +233,9 @@ public class WebCrawler implements Runnable {
                                         
                             }
                             else{
-                               int i=0; 
+                              // int i=0; 
                               for (WebURL curURL : assignedURLs) {
-                                  i++;
+                                //  i++;
                                   BasicCrawlController.isConetenReadEnable=true;
 					if (curURL != null) {
 						processPage(curURL);
@@ -245,7 +245,7 @@ public class WebCrawler implements Runnable {
 						logger.info("Exiting because of controller shutdown.");
 						return;
 					}
-                                        System.out.println("################## "+i);
+                                       // System.out.println("################## "+i);
 				}
 			}
                  }

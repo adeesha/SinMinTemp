@@ -165,7 +165,7 @@ public class CrawlController extends Configurable {
 					try {
 						synchronized (waitingLock) {
 
-							while (true) {
+							while (true) {                                                            
 								sleep(10);
 								boolean someoneIsWorking = false;
 								for (int i = 0; i < threads.size(); i++) {
@@ -256,6 +256,7 @@ public class CrawlController extends Configurable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+                
 	}
 
 	/**
