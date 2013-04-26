@@ -208,6 +208,7 @@ public class WebCrawler implements Runnable {
             }
         } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (BasicCrawlController.isLankadeepatoday) {
                 if (!BasicCrawlController.isMainURLCrawled) {
                     WebURL curURL = assignedURLs.get(0);
@@ -217,6 +218,8 @@ public class WebCrawler implements Runnable {
                         processPage(curURL);
                         frontier.setProcessed(curURL);
 =======
+=======
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
 
             if (!BasicCrawlController.isMainURLCrawled) {
                 WebURL curURL = assignedURLs.get(0);
@@ -244,12 +247,16 @@ public class WebCrawler implements Runnable {
                         //frontier.setProcessed(curURL);
                         
                         // end of modification
+<<<<<<< HEAD
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+=======
 >>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
                     }
                     if (myController.isShuttingDown()) {
                         logger.info("Exiting because of controller shutdown.");
                         return;
                     }
+<<<<<<< HEAD
 <<<<<<< HEAD
 
                 } else {
@@ -284,6 +291,8 @@ public class WebCrawler implements Runnable {
                     System.out.println("**********Crawling**********" + webUrl.toString());
                     processPage(webUrl);
 
+=======
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
 =======
 >>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
                 }
@@ -384,6 +393,7 @@ public class WebCrawler implements Runnable {
 
             ParseData parseData = page.getParseData();
 <<<<<<< HEAD
+<<<<<<< HEAD
 
             //modified by Adeesha
 
@@ -440,6 +450,8 @@ public class WebCrawler implements Runnable {
                 }
                 // end of If Modified by Adeesha
 =======
+=======
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
             
             //modified by Adeesha
             
@@ -495,6 +507,9 @@ public class WebCrawler implements Runnable {
                 logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
             }
             // end of If Modified by Adeesha
+<<<<<<< HEAD
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+=======
 >>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
             }
 
@@ -506,9 +521,15 @@ public class WebCrawler implements Runnable {
             }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
+=======
+        
+        
+    
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
 =======
         
         
