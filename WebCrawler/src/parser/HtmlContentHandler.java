@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import webcrawler.BasicCrawlController;
+import webcrawler.SQLCommunicator;
 
 public class HtmlContentHandler extends DefaultHandler {
 
@@ -38,7 +39,7 @@ public class HtmlContentHandler extends DefaultHandler {
 
     private enum Element {
 
-        A, AREA, LINK, IFRAME, FRAME, EMBED, IMG, BASE, META, BODY, P, SPAN
+        A, AREA, LINK, IFRAME, FRAME, EMBED, IMG, BASE, META, BODY, P, SPAN,HTML
     }
 
     private static class HtmlFactory {
@@ -61,6 +62,13 @@ public class HtmlContentHandler extends DefaultHandler {
     private String metaLocation;
     private boolean isWithinBodyElement;
     private StringBuilder bodyText;
+    
+    private StringBuilder databaseAuthor;
+    private StringBuilder databaseDate;
+            private StringBuilder databaseTopic;
+                    private StringBuilder databaseContent;
+    
+    
     private List<ExtractedUrlAnchorPair> outgoingUrls;
     private ExtractedUrlAnchorPair curUrl = null;
     private boolean anchorFlag = false;
@@ -70,6 +78,7 @@ public class HtmlContentHandler extends DefaultHandler {
     private boolean isDateAndAuthorDiscovered;
     private boolean isTopicDiscovered;
     private boolean isWithinElement;
+    private boolean isDatabasesendOK;
 
     public HtmlContentHandler() {
         isEntryStarted = false;
@@ -78,9 +87,15 @@ public class HtmlContentHandler extends DefaultHandler {
         isDateAndAuthorDiscovered = false;
         isTopicDiscovered = false;
         isWithinElement = false;
+        isDatabasesendOK=false;
 
         bodyText = new StringBuilder();
+        databaseAuthor= new StringBuilder();
+        databaseContent= new StringBuilder();
+        databaseDate= new StringBuilder();
+        databaseTopic= new StringBuilder();
         outgoingUrls = new ArrayList<>();
+        
     }
 
     @Override
@@ -89,6 +104,28 @@ public class HtmlContentHandler extends DefaultHandler {
         // modified by adeesha. 
 
         if (BasicCrawlController.isConetenReadEnable) {
+            
+            
+             if (element == Element.META) {
+           String name = attributes.getValue("name");
+            String content = attributes.getValue("content");
+            
+            if("description".equals(name)&&"".equals(content)){
+                System.out.println("not a valid URL");
+                return;
+            }
+            if("description".equals(name)&&!"".equals(content)){
+                System.out.println("valid URL");
+                isDatabasesendOK=true;
+               
+            }
+            
+           
+        }
+            
+            
+            
+            
 
             if (isEntryStarted) {
                 if (element == Element.P) {
@@ -237,6 +274,7 @@ public class HtmlContentHandler extends DefaultHandler {
         if (element == Element.BODY) {
             isWithinBodyElement = true;
         }
+        
     }
 
     @Override
@@ -273,7 +311,11 @@ public class HtmlContentHandler extends DefaultHandler {
         }
         if (element == Element.BODY) {
             isWithinBodyElement = false;
-        }
+            if(isDatabasesendOK){
+            SQLCommunicator.communicate(databaseAuthor.toString(), databaseDate.toString(), databaseTopic.toString(), databaseContent.toString());
+            }
+            }
+      
     }
 
     @Override
@@ -285,6 +327,7 @@ public class HtmlContentHandler extends DefaultHandler {
             isTopicDiscovered = false;
             BufferedWriter writer = null;
             try {
+                databaseTopic.append(ch, start, length);
                 writer = new BufferedWriter(new FileWriter("./output1.txt", true));
                 writer.write("Topic   : ");
                 writer.write(new String(ch, start, length));
@@ -298,6 +341,12 @@ public class HtmlContentHandler extends DefaultHandler {
         }
         if (isDateAndAuthorDiscovered) {
             isDateAndAuthorDiscovered = false;
+            
+            String tempauthoranddate = new String(ch);
+               String[] tempauthoranddatearray = tempauthoranddate.split("\\|");
+            
+            databaseDate.append(tempauthoranddatearray[0], start, tempauthoranddatearray[0].length());
+            databaseAuthor.append(tempauthoranddatearray[1], start, length-tempauthoranddatearray[0].length());
             BufferedWriter writer = null;
             try {
                 writer = new BufferedWriter(new FileWriter("./output1.txt", true));
@@ -313,7 +362,7 @@ public class HtmlContentHandler extends DefaultHandler {
         }
 
         if (isParagraphStarted) {
-
+            databaseContent.append(ch, start, length);
             BufferedWriter writer = null;
             try {
                 writer = new BufferedWriter(new FileWriter("./output1.txt", true));

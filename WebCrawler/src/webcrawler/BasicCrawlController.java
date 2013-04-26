@@ -21,10 +21,11 @@ public class BasicCrawlController {
     /**
      * @param args the command line arguments
      */
-    
+    public static boolean isLankadeepatoday=false;
+    public static boolean isLankadeepaArchives=false;
     public static boolean isMainURLCrawled=false;
     public static boolean isConetenReadEnable=false;
-     public static void main(String[] args) throws Exception {
+     public static void mainCrawl(String args) throws Exception {
               //  if (args.length != 2) {
                 //        System.out.println("Needed parameters: ");
                  //       System.out.println("\t rootFolder (it will contain intermediate crawl data)");
@@ -36,7 +37,16 @@ public class BasicCrawlController {
                  * crawlStorageFolder is a folder where intermediate crawl data is
                  * stored.
                  */
-                String crawlStorageFolder = "projectdata";
+         
+         if(args.equalsIgnoreCase("LankadeepaArchives")){
+             
+             isLankadeepaArchives=true;
+         }
+         if(args.equalsIgnoreCase("LankadeepaToday")){
+             isLankadeepatoday=true;
+         }
+                
+         String crawlStorageFolder = "projectdata";
 
                 /*
                  * numberOfCrawlers shows the number of concurrent threads that should

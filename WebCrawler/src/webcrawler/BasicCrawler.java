@@ -54,6 +54,8 @@ public class BasicCrawler extends WebCrawler {
                 String parentUrl = page.getWebURL().getParentUrl();
                 String anchor = page.getWebURL().getAnchor();
 
+                
+               
                 System.out.println("Docid: " + docid);
                 System.out.println("URL: " + url);
                 System.out.println("Domain: '" + domain + "'");
