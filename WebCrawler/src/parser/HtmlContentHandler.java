@@ -309,6 +309,7 @@ public class HtmlContentHandler extends DefaultHandler {
             }
             curUrl = null;
         }
+        // comment for commit 2013.04.26
         if (element == Element.BODY) {
             isWithinBodyElement = false;
             if(isDatabasesendOK){
@@ -317,7 +318,7 @@ public class HtmlContentHandler extends DefaultHandler {
             }
       
     }
-
+    
     @Override
     public void characters(char ch[], int start, int length) throws SAXException {
         // modified by Adeesha	
