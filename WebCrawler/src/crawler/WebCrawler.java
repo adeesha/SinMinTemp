@@ -207,6 +207,7 @@ public class WebCrawler implements Runnable {
                 e.printStackTrace();
             }
         } else {
+<<<<<<< HEAD
             if (BasicCrawlController.isLankadeepatoday) {
                 if (!BasicCrawlController.isMainURLCrawled) {
                     WebURL curURL = assignedURLs.get(0);
@@ -215,11 +216,41 @@ public class WebCrawler implements Runnable {
                         System.out.println("Main URL Crawling *******************");
                         processPage(curURL);
                         frontier.setProcessed(curURL);
+=======
+
+            if (!BasicCrawlController.isMainURLCrawled) {
+                WebURL curURL = assignedURLs.get(0);
+               // BasicCrawlController.isMainURLCrawled = true;
+                if (curURL != null) {
+                    System.out.println("Main URL Crawling *******************");
+                    processPage(curURL);
+                    frontier.setProcessed(curURL);
+                }
+                if (myController.isShuttingDown()) {
+                    logger.info("Exiting because of controller shutdown.");
+                    return;
+                }
+
+            } else {
+
+                for (WebURL curURL : assignedURLs) {
+                    BasicCrawlController.isConetenReadEnable = true;
+                    if (curURL != null) {
+                        System.out.println("**********Crawling**********"+curURL.toString());
+                        processPage(curURL);
+                        
+                        // modified by Adeesha
+                        //remove the comment to get the original version
+                        //frontier.setProcessed(curURL);
+                        
+                        // end of modification
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
                     }
                     if (myController.isShuttingDown()) {
                         logger.info("Exiting because of controller shutdown.");
                         return;
                     }
+<<<<<<< HEAD
 
                 } else {
 
@@ -253,6 +284,8 @@ public class WebCrawler implements Runnable {
                     System.out.println("**********Crawling**********" + webUrl.toString());
                     processPage(webUrl);
 
+=======
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
                 }
             }
         }
@@ -350,6 +383,7 @@ public class WebCrawler implements Runnable {
             }
 
             ParseData parseData = page.getParseData();
+<<<<<<< HEAD
 
             //modified by Adeesha
 
@@ -405,6 +439,63 @@ public class WebCrawler implements Runnable {
                     logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
                 }
                 // end of If Modified by Adeesha
+=======
+            
+            //modified by Adeesha
+            
+            if (!BasicCrawlController.isMainURLCrawled){
+                
+                
+             // end of modification 
+                
+            if (parseData instanceof HtmlParseData) {
+                HtmlParseData htmlParseData = (HtmlParseData) parseData;
+
+                List<WebURL> toSchedule = new ArrayList<>();
+                int maxCrawlDepth = myController.getConfig().getMaxDepthOfCrawling();
+                for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
+                    webURL.setParentDocid(docid);
+                    webURL.setParentUrl(curURL.getURL());
+                    int newdocid = docIdServer.getDocId(webURL.getURL());
+                    if (newdocid > 0) {
+                        // This is not the first time that this Url is
+                        // visited. So, we set the depth to a negative
+                        // number.
+                        webURL.setDepth((short) -1);
+                        webURL.setDocid(newdocid);
+                    } else {
+                        webURL.setDocid(-1);
+                        webURL.setDepth((short) (curURL.getDepth() + 1));
+                        if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
+                            //modified by Adeesha
+                            //  if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
+                            if (webURL.getURL().contains("articles")) {
+
+
+                                webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
+                                toSchedule.add(webURL);
+                                //}
+                            }
+                            // end of modification
+                        }
+                    }
+                }
+                //modified by adeesha               
+                
+                
+                    frontier.scheduleAll(toSchedule);
+                    BasicCrawlController.isMainURLCrawled=true;
+                
+                     
+                // end of modification
+            }
+            try {
+                visit(page);
+            } catch (Exception e) {
+                logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
+            }
+            // end of If Modified by Adeesha
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
             }
 
         } catch (Exception e) {
@@ -414,9 +505,15 @@ public class WebCrawler implements Runnable {
                 fetchResult.discardContentIfNotConsumed();
             }
         }
+<<<<<<< HEAD
 
 
 
+=======
+        
+        
+    
+>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
     }
 
     public Thread getThread() {
