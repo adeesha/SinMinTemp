@@ -28,9 +28,9 @@ public class SQLCommunicator {
         Statement st = null;
         ResultSet rs = null;
 
-        String url = "jdbc:mysql://localhost:3306/test";
+        String url = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8";
         String user = "root";
-        String password = "root123";
+        String password = "";
 
         try {
             con = DriverManager.getConnection(url, user, password);

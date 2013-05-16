@@ -193,6 +193,7 @@ public class WebCrawler implements Runnable {
         //while (true) {
 
         // modified by Adeesha
+<<<<<<< HEAD
         
             // start crawling for lankadeepa archives 
              if (BasicCrawlController.isLankadeepaArchives) {
@@ -216,6 +217,71 @@ public class WebCrawler implements Runnable {
                 for (int i = 2010; i < 2014; i++) {
 
                     for (int j = 1; j < 13; j++) {
+=======
+        List<WebURL> assignedURLs = new ArrayList<>(50);
+        isWaitingForNewURLs = true;
+        frontier.getNextURLs(50, assignedURLs);
+        isWaitingForNewURLs = false;
+        if (assignedURLs.size() == 0) {
+            if (frontier.isFinished()) {
+                return;
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+
+            if (BasicCrawlController.isLankadeepatoday) {
+                if (!BasicCrawlController.isMainURLCrawled) {
+                    WebURL curURL = assignedURLs.get(0);
+                    // BasicCrawlController.isMainURLCrawled = true;
+                    if (curURL != null) {
+                        System.out.println("Main URL Crawling *******************");
+                        processPage(curURL);
+                        frontier.setProcessed(curURL);
+//=======
+//=======
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+//
+//            if (!BasicCrawlController.isMainURLCrawled) {
+//                WebURL curURL = assignedURLs.get(0);
+//               // BasicCrawlController.isMainURLCrawled = true;
+//                if (curURL != null) {
+//                    System.out.println("Main URL Crawling *******************");
+//                    processPage(curURL);
+//                    frontier.setProcessed(curURL);
+//                }
+//                if (myController.isShuttingDown()) {
+//                    logger.info("Exiting because of controller shutdown.");
+//                    return;
+//                }
+//
+//            } else {
+//
+//                for (WebURL curURL : assignedURLs) {
+//                    BasicCrawlController.isConetenReadEnable = true;
+//                    if (curURL != null) {
+//                        System.out.println("**********Crawling**********"+curURL.toString());
+//                        processPage(curURL);
+//                        
+//                        // modified by Adeesha
+//                        //remove the comment to get the original version
+//                        //frontier.setProcessed(curURL);
+//                        
+//                        // end of modification
+//<<<<<<< HEAD
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+//=======
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+                    }
+                    if (myController.isShuttingDown()) {
+                        logger.info("Exiting because of controller shutdown.");
+                        return;
+                    }
+
+>>>>>>> 5c12fb7c69c86a09ba57309a2070ad51f2960726
 
                         for (int k = 1; k < 32; k++) {
                             for (int p = 1; p < 30; p++) {
@@ -242,6 +308,18 @@ public class WebCrawler implements Runnable {
 
                     }
 
+<<<<<<< HEAD
+=======
+                for (int i = 110027; i < 1000000; i++) {
+                    String pageURL = "http://www.lankadeepa.lk/index.php/articles/" +i;
+                    String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
+                    WebURL webUrl = new WebURL();
+                    webUrl.setURL(canonicalUrl);
+                    System.out.println("**********Crawling**********" + webUrl.toString());
+                    processPage(webUrl);
+
+
+>>>>>>> 5c12fb7c69c86a09ba57309a2070ad51f2960726
                 }
             }
         
@@ -330,7 +408,130 @@ public class WebCrawler implements Runnable {
                 return;
             }
 
+<<<<<<< HEAD
          
+=======
+            ParseData parseData = page.getParseData();
+
+
+            //modified by Adeesha
+
+            if (!BasicCrawlController.isMainURLCrawled) {
+
+
+                // end of modification 
+
+                if (parseData instanceof HtmlParseData) {
+                    HtmlParseData htmlParseData = (HtmlParseData) parseData;
+
+                    List<WebURL> toSchedule = new ArrayList<>();
+                    int maxCrawlDepth = myController.getConfig().getMaxDepthOfCrawling();
+                    for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
+                        webURL.setParentDocid(docid);
+                        webURL.setParentUrl(curURL.getURL());
+                        int newdocid = docIdServer.getDocId(webURL.getURL());
+                        if (newdocid > 0) {
+                            // This is not the first time that this Url is
+                            // visited. So, we set the depth to a negative
+                            // number.
+                            webURL.setDepth((short) -1);
+                            webURL.setDocid(newdocid);
+                        } else {
+                            webURL.setDocid(-1);
+                            webURL.setDepth((short) (curURL.getDepth() + 1));
+                            if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
+                                //modified by Adeesha
+                                //  if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
+                                if (webURL.getURL().contains("articles")) {
+
+
+                                    webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
+                                    toSchedule.add(webURL);
+                                    //}
+                                }
+                                // end of modification
+                            }
+                        }
+                    }
+                    //modified by adeesha               
+
+
+                    frontier.scheduleAll(toSchedule);
+                    BasicCrawlController.isMainURLCrawled = true;
+
+
+                    // end of modification
+                }
+                try {
+                    visit(page);
+                } catch (Exception e) {
+                    logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
+                }
+                // end of If Modified by Adeesha
+//=======
+//=======
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+//            
+//            //modified by Adeesha
+//            
+//            if (!BasicCrawlController.isMainURLCrawled){
+//                
+//                
+//             // end of modification 
+//                
+//            if (parseData instanceof HtmlParseData) {
+//                HtmlParseData htmlParseData = (HtmlParseData) parseData;
+//
+//                List<WebURL> toSchedule = new ArrayList<>();
+//                int maxCrawlDepth = myController.getConfig().getMaxDepthOfCrawling();
+//                for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
+//                    webURL.setParentDocid(docid);
+//                    webURL.setParentUrl(curURL.getURL());
+//                    int newdocid = docIdServer.getDocId(webURL.getURL());
+//                    if (newdocid > 0) {
+//                        // This is not the first time that this Url is
+//                        // visited. So, we set the depth to a negative
+//                        // number.
+//                        webURL.setDepth((short) -1);
+//                        webURL.setDocid(newdocid);
+//                    } else {
+//                        webURL.setDocid(-1);
+//                        webURL.setDepth((short) (curURL.getDepth() + 1));
+//                        if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
+//                            //modified by Adeesha
+//                            //  if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
+//                            if (webURL.getURL().contains("articles")) {
+//
+//
+//                                webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
+//                                toSchedule.add(webURL);
+//                                //}
+//                            }
+//                            // end of modification
+//                        }
+//                    }
+//                }
+//                //modified by adeesha               
+//                
+//                
+//                    frontier.scheduleAll(toSchedule);
+//                    BasicCrawlController.isMainURLCrawled=true;
+//                
+//                     
+//                // end of modification
+//            }
+//            try {
+//                visit(page);
+//            } catch (Exception e) {
+//                logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
+//            }
+//            // end of If Modified by Adeesha
+//<<<<<<< HEAD
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+//=======
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+            }
+>>>>>>> 5c12fb7c69c86a09ba57309a2070ad51f2960726
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", while processing: " + curURL);
@@ -339,9 +540,27 @@ public class WebCrawler implements Runnable {
                 fetchResult.discardContentIfNotConsumed();
             }
         }
+<<<<<<< HEAD
 
 
 
+=======
+//<<<<<<< HEAD
+//<<<<<<< HEAD
+//
+//
+//
+//=======
+//        
+//        
+//    
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+//=======
+//        
+//        
+//    
+//>>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+>>>>>>> 5c12fb7c69c86a09ba57309a2070ad51f2960726
     }
 
     public Thread getThread() {
