@@ -55,8 +55,7 @@ import org.apache.log4j.Logger;
 
 import crawler.Configurable;
 import crawler.CrawlConfig;
-import url.URLCanonicalizer;
-import url.WebURL;
+
 
 /**
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
@@ -73,7 +72,7 @@ public class PageFetcher extends Configurable {
 
 	protected long lastFetchTime = 0;
 
-	protected IdleConnectionMonitorThread connectionMonitorThread = null;
+	
 
 	public PageFetcher(CrawlConfig config) {
 		super(config);
@@ -135,16 +134,12 @@ public class PageFetcher extends Configurable {
 
         });
 
-		if (connectionMonitorThread == null) {
-			connectionMonitorThread = new IdleConnectionMonitorThread(connectionManager);
-		}
-		connectionMonitorThread.start();
 
 	}
 
-	public PageFetchResult fetchHeader(WebURL webUrl) {
+	public PageFetchResult fetchHeader(String webUrl) {
 		PageFetchResult fetchResult = new PageFetchResult();
-		String toFetchURL = webUrl.getURL();
+		String toFetchURL = webUrl;
 		HttpGet get = null;
 		try {
 			get = new HttpGet(toFetchURL);
@@ -161,31 +156,11 @@ public class PageFetcher extends Configurable {
 			fetchResult.setResponseHeaders(response.getAllHeaders());
 			
 			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				if (statusCode != HttpStatus.SC_NOT_FOUND) {
-					if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-						Header header = response.getFirstHeader("Location");
-						if (header != null) {
-							String movedToUrl = header.getValue();
-							movedToUrl = URLCanonicalizer.getCanonicalURL(movedToUrl, toFetchURL);
-							fetchResult.setMovedToUrl(movedToUrl);
-						} 
-						fetchResult.setStatusCode(statusCode);
-						return fetchResult;
-					}
-					logger.info("Failed: " + response.getStatusLine().toString() + ", while fetching " + toFetchURL);
-				}
-				fetchResult.setStatusCode(response.getStatusLine().getStatusCode());
-				return fetchResult;
-			}
+			
 
 			fetchResult.setFetchedUrl(toFetchURL);
 			String uri = get.getURI().toString();
-			if (!uri.equals(toFetchURL)) {
-				if (!URLCanonicalizer.getCanonicalURL(uri).equals(toFetchURL)) {
-					fetchResult.setFetchedUrl(uri);
-				}
-			}
+			
 
 			if (fetchResult.getEntity() != null) {
 				long size = fetchResult.getEntity().getContentLength();
@@ -215,7 +190,7 @@ public class PageFetcher extends Configurable {
 			
 		} catch (IOException e) {
 			logger.error("Fatal transport error: " + e.getMessage() + " while fetching " + toFetchURL
-					+ " (link found in doc #" + webUrl.getParentDocid() + ")");
+					+ " (link found in doc #" + ")");
 			fetchResult.setStatusCode(CustomFetchStatus.FatalTransportError);
 			return fetchResult;
 		} catch (IllegalStateException e) {
@@ -223,9 +198,9 @@ public class PageFetcher extends Configurable {
 			// and other schemes
 		} catch (Exception e) {
 			if (e.getMessage() == null) {
-				logger.error("Error while fetching " + webUrl.getURL());
+				logger.error("Error while fetching " + webUrl);
 			} else {
-				logger.error(e.getMessage() + " while fetching " + webUrl.getURL());
+				logger.error(e.getMessage() + " while fetching " + webUrl);
 			}
 		} finally {
 			try {
@@ -240,12 +215,7 @@ public class PageFetcher extends Configurable {
 		return fetchResult;
 	}
 
-	public synchronized void shutDown() {
-		if (connectionMonitorThread != null) {
-			connectionManager.shutdown();
-			connectionMonitorThread.shutdown();
-		}
-	}
+	
 	
 	public HttpClient getHttpClient() {
 		return httpClient;

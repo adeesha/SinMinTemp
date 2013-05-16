@@ -78,7 +78,7 @@ public class PageFetchResult {
 			page.setFetchResponseHeaders(responseHeaders);
 			return true;
 		} catch (Exception e) {
-			logger.info("Exception while fetching content for: " + page.getWebURL().getURL() + " [" + e.getMessage()
+			logger.info("Exception while fetching content for: " + page.getWebURL() + " [" + e.getMessage()
 					+ "]");
 		}
 		return false;

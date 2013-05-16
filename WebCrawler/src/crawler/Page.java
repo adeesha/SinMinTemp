@@ -24,8 +24,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 
-import parser.ParseData;
-import url.WebURL;
+
+
 
 /**
  * This class contains the data for a fetched and parsed page.
@@ -37,7 +37,7 @@ public class Page {
     /**
      * The URL of this page.
      */
-    protected WebURL url;
+    protected String url;
 
     /**
      * The content of this page in binary format.
@@ -71,17 +71,17 @@ public class Page {
     /**
      * The parsed data populated by parsers
      */
-    protected ParseData parseData;
+  
 
-	public Page(WebURL url) {
+	public Page(String url) {
 		this.url = url;
 	}
 
-	public WebURL getWebURL() {
+	public String getWebURL() {
 		return url;
 	}
 
-	public void setWebURL(WebURL url) {
+	public void setWebURL(String url) {
 		this.url = url;
 	}
 
@@ -126,13 +126,7 @@ public class Page {
     /**
      * Returns the parsed data generated for this page by parsers
      */
-	public ParseData getParseData() {
-		return parseData;
-	}
-
-	public void setParseData(ParseData parseData) {
-		this.parseData = parseData;
-	}
+	
 
     /**
      * Returns the content of this page in binary format.

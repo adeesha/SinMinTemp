@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import parser.HtmlParseData;
-import url.WebURL;
+
+
 
 import java.util.List;
 import java.util.logging.Level;
@@ -34,7 +34,7 @@ public class BasicCrawler extends WebCrawler {
          * should be crawled or not (based on your crawling logic).
          */
         @Override
-        public boolean shouldVisit(WebURL url) {
+        public boolean shouldVisit(String url) {
                 //String href = url.getURL().toLowerCase();
                 //return !FILTERS.matcher(href).matches() && href.startsWith("http://www.lankadeepa.lk/");
                 return true;
@@ -46,71 +46,11 @@ public class BasicCrawler extends WebCrawler {
          */
         @Override
         public void visit(Page page) {
-                int docid = page.getWebURL().getDocid();
-                String url = page.getWebURL().getURL();
-                String domain = page.getWebURL().getDomain();
-                String path = page.getWebURL().getPath();
-                String subDomain = page.getWebURL().getSubDomain();
-                String parentUrl = page.getWebURL().getParentUrl();
-                String anchor = page.getWebURL().getAnchor();
-
-                
                
-                System.out.println("Docid: " + docid);
-                System.out.println("URL: " + url);
-                System.out.println("Domain: '" + domain + "'");
-                System.out.println("Sub-domain: '" + subDomain + "'");
-                System.out.println("Path: '" + path + "'");
-                System.out.println("Parent page: " + parentUrl);
-                System.out.println("Anchor text: " + anchor);
+           
+                            
                 
-                if (page.getParseData() instanceof HtmlParseData) {
-                    try {
-                        HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-                        //String text = htmlParseData.getText();
-                        //String html = htmlParseData.getHtml();
-                        List<WebURL> links = htmlParseData.getOutgoingUrls();
-                        
-                       
-                         // modified by Adeesha  
-                        
-                         Iterator<WebURL> iterator = links.iterator();
-                          while (iterator.hasNext()) {
-                                String contentURL=iterator.next().getURL();
-                                if(contentURL.contains("articles")){
-                                    System.out.println(contentURL);
-                                }
-                  
-                                
-                           }
-                        
-//                        BufferedWriter writer = null;
-//                       
-//                        writer = new BufferedWriter(new FileWriter("./output.txt"));
-//                        writer.write(text);
-//                        writer.flush();
-//                        writer.close();
-                        
-                        //end of modification
-                        
-                      //  System.out.println("Text length: " + text.length());
-                       // System.out.println("Text length: " + text);
-                      //  System.out.println("Html length: " + html.length());
-                        System.out.println("Number of outgoing links: " + links.size());
-                    } //catch (IOException ex) {
-                    catch (Exception ex) {
-                        Logger.getLogger(BasicCrawler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-                Header[] responseHeaders = page.getFetchResponseHeaders();
-                if (responseHeaders != null) {
-                        System.out.println("Response headers:");
-                        for (Header header : responseHeaders) {
-                                System.out.println("\t" + header.getName() + ": " + header.getValue());
-                        }
-                }
+              
                 
-                System.out.println("=============");
         }
 }

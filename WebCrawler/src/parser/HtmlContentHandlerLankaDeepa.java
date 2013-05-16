@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import webcrawler.BasicCrawlController;
 import webcrawler.SQLCommunicator;
 
-public class HtmlContentHandler extends DefaultHandler {
+public class HtmlContentHandlerLankaDeepa extends ContentHandler {
 
     private final int MAX_ANCHOR_LENGTH = 100;
 
@@ -69,8 +69,7 @@ public class HtmlContentHandler extends DefaultHandler {
                     private StringBuilder databaseContent;
     
     
-    private List<ExtractedUrlAnchorPair> outgoingUrls;
-    private ExtractedUrlAnchorPair curUrl = null;
+   
     private boolean anchorFlag = false;
     private StringBuilder anchorText = new StringBuilder();
     private boolean isEntryStarted;
@@ -80,7 +79,7 @@ public class HtmlContentHandler extends DefaultHandler {
     private boolean isWithinElement;
     private boolean isDatabasesendOK;
 
-    public HtmlContentHandler() {
+    public HtmlContentHandlerLankaDeepa() {
         isEntryStarted = false;
         isWithinBodyElement = false;
         isParagraphStarted = false;
@@ -94,7 +93,7 @@ public class HtmlContentHandler extends DefaultHandler {
         databaseContent= new StringBuilder();
         databaseDate= new StringBuilder();
         databaseTopic= new StringBuilder();
-        outgoingUrls = new ArrayList<>();
+      
         
     }
 
@@ -103,7 +102,7 @@ public class HtmlContentHandler extends DefaultHandler {
         Element element = HtmlFactory.getElement(localName);
         // modified by adeesha. 
 
-        if (BasicCrawlController.isConetenReadEnable) {
+    
             
             
              if (element == Element.META) {
@@ -162,7 +161,7 @@ public class HtmlContentHandler extends DefaultHandler {
 
                 return;
             }
-        }
+     
 
         if (element == Element.P) {
 
@@ -205,9 +204,7 @@ public class HtmlContentHandler extends DefaultHandler {
             String href = attributes.getValue("href");
             if (href != null) {
                 anchorFlag = true;
-                curUrl = new ExtractedUrlAnchorPair();
-                curUrl.setHref(href);
-                outgoingUrls.add(curUrl);
+               
             }
             return;
         }
@@ -215,9 +212,7 @@ public class HtmlContentHandler extends DefaultHandler {
         if (element == Element.IMG) {
             String imgSrc = attributes.getValue("src");
             if (imgSrc != null) {
-                curUrl = new ExtractedUrlAnchorPair();
-                curUrl.setHref(imgSrc);
-                outgoingUrls.add(curUrl);
+              
             }
             return;
         }
@@ -225,9 +220,7 @@ public class HtmlContentHandler extends DefaultHandler {
         if (element == Element.IFRAME || element == Element.FRAME || element == Element.EMBED) {
             String src = attributes.getValue("src");
             if (src != null) {
-                curUrl = new ExtractedUrlAnchorPair();
-                curUrl.setHref(src);
-                outgoingUrls.add(curUrl);
+              
             }
             return;
         }
@@ -255,17 +248,13 @@ public class HtmlContentHandler extends DefaultHandler {
                     if (pos != -1) {
                         metaRefresh = content.substring(pos + 4);
                     }
-                    curUrl = new ExtractedUrlAnchorPair();
-                    curUrl.setHref(metaRefresh);
-                    outgoingUrls.add(curUrl);
+                   
                 }
 
                 // http-equiv="location" content="http://foo.bar/..."
                 if (equiv.equals("location") && (metaLocation == null)) {
                     metaLocation = content;
-                    curUrl = new ExtractedUrlAnchorPair();
-                    curUrl.setHref(metaRefresh);
-                    outgoingUrls.add(curUrl);
+                   
                 }
             }
             return;
@@ -291,23 +280,13 @@ public class HtmlContentHandler extends DefaultHandler {
                 writer.close();
 
             } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HtmlContentHandlerLankaDeepa.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
         if (element == Element.A || element == Element.AREA || element == Element.LINK) {
             anchorFlag = false;
-            if (curUrl != null) {
-                String anchor = anchorText.toString().replaceAll("\n", " ").replaceAll("\t", " ").trim();
-                if (!anchor.isEmpty()) {
-                    if (anchor.length() > MAX_ANCHOR_LENGTH) {
-                        anchor = anchor.substring(0, MAX_ANCHOR_LENGTH) + "...";
-                    }
-                    curUrl.setAnchor(anchor);
-                }
-                anchorText.delete(0, anchorText.length());
-            }
-            curUrl = null;
+            
         }
         // comment for commit 2013.04.26
         if (element == Element.BODY) {
@@ -337,7 +316,7 @@ public class HtmlContentHandler extends DefaultHandler {
                 writer.close();
 
             } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HtmlContentHandlerLankaDeepa.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (isDateAndAuthorDiscovered) {
@@ -358,7 +337,7 @@ public class HtmlContentHandler extends DefaultHandler {
                 writer.close();
 
             } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HtmlContentHandlerLankaDeepa.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -374,7 +353,7 @@ public class HtmlContentHandler extends DefaultHandler {
                 writer.close();
 
             } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HtmlContentHandlerLankaDeepa.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             //isParagraphStarted=false;
@@ -392,14 +371,17 @@ public class HtmlContentHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public String getBodyText() {
         return bodyText.toString();
     }
 
-    public List<ExtractedUrlAnchorPair> getOutgoingUrls() {
-        return outgoingUrls;
-    }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public String getBaseUrl() {
         return base;
     }

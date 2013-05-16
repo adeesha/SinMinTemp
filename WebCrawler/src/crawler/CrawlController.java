@@ -20,12 +20,11 @@ package crawler;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import fetcher.PageFetcher;
-import frontier.DocIDServer;
-import frontier.Frontier;
-import robotstxt.RobotstxtServer;
-import url.URLCanonicalizer;
-import url.WebURL;
-import util.IO;
+
+
+
+
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -66,13 +65,13 @@ public class CrawlController extends Configurable {
 	protected boolean shuttingDown;
 
 	protected PageFetcher pageFetcher;
-	protected RobotstxtServer robotstxtServer;
-	protected Frontier frontier;
-	protected DocIDServer docIdServer;
+	
+	
+	
 
 	protected final Object waitingLock = new Object();
 
-	public CrawlController(CrawlConfig config, PageFetcher pageFetcher, RobotstxtServer robotstxtServer)
+	public CrawlController(CrawlConfig config, PageFetcher pageFetcher)
 			throws Exception {
 		super(config);
 
@@ -97,17 +96,14 @@ public class CrawlController extends Configurable {
 				throw new Exception("Couldn't create this folder: " + envHome.getAbsolutePath());
 			}
 		}
-		if (!resumable) {
-			IO.deleteFolderContents(envHome);
-		}
+		
 
 		Environment env = new Environment(envHome, envConfig);
-		docIdServer = new DocIDServer(env, config);
-		frontier = new Frontier(env, config, docIdServer);
+		
+		
 
 		this.pageFetcher = pageFetcher;
-		this.robotstxtServer = robotstxtServer;
-
+		
 		finished = false;
 		shuttingDown = false;
 	}
@@ -165,7 +161,7 @@ public class CrawlController extends Configurable {
 					try {
 						synchronized (waitingLock) {
 
-							while (true) {                                                            
+							while (true) {
 								sleep(10);
 								boolean someoneIsWorking = false;
 								for (int i = 0; i < threads.size(); i++) {
@@ -202,25 +198,14 @@ public class CrawlController extends Configurable {
 										}
 									}
 									if (!someoneIsWorking) {
-										if (!shuttingDown) {
-											long queueLength = frontier.getQueueLength();
-											if (queueLength > 0) {
-												continue;
-											}
-											logger.info("No thread is working and no more URLs are in queue waiting for another 10 seconds to make sure...");
-											sleep(10);
-											queueLength = frontier.getQueueLength();
-											if (queueLength > 0) {
-												continue;
-											}
-										}
+										
 
 										logger.info("All of the crawlers are stopped. Finishing the process...");
 										// At this step, frontier notifies the
 										// threads that were
 										// waiting for new URLs and they should
 										// stop
-										frontier.finish();
+										
 										for (T crawler : crawlers) {
 											crawler.onBeforeExit();
 											crawlersLocalData.add(crawler.getMyLocalData());
@@ -229,9 +214,9 @@ public class CrawlController extends Configurable {
 										logger.info("Waiting for 10 seconds before final clean up...");
 										sleep(10);
 
-										frontier.close();
-										docIdServer.close();
-										pageFetcher.shutDown();
+										
+										
+										
 
 										finished = true;
 										waitingLock.notifyAll();
@@ -256,7 +241,6 @@ public class CrawlController extends Configurable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-                
 	}
 
 	/**
@@ -301,9 +285,7 @@ public class CrawlController extends Configurable {
 	 * @param pageUrl
 	 *            the URL of the seed
 	 */
-	public void addSeed(String pageUrl) {
-		addSeed(pageUrl, -1);
-	}
+	
 
 	/**
 	 * Adds a new seed URL. A seed URL is a URL that is fetched by the crawler
@@ -324,37 +306,7 @@ public class CrawlController extends Configurable {
 	 *            the document id that you want to be assigned to this seed URL.
 	 * 
 	 */
-	public void addSeed(String pageUrl, int docId) {
-		String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageUrl);
-		if (canonicalUrl == null) {
-			logger.error("Invalid seed URL: " + pageUrl);
-			return;
-		}
-		if (docId < 0) {
-			docId = docIdServer.getDocId(canonicalUrl);
-			if (docId > 0) {
-				// This URL is already seen.
-				return;
-			}
-			docId = docIdServer.getNewDocID(canonicalUrl);
-		} else {
-			try {
-				docIdServer.addUrlAndDocId(canonicalUrl, docId);
-			} catch (Exception e) {
-				logger.error("Could not add seed: " + e.getMessage());
-			}
-		}
-
-		WebURL webUrl = new WebURL();
-		webUrl.setURL(canonicalUrl);
-		webUrl.setDocid(docId);
-		webUrl.setDepth((short) 0);
-		//if (!robotstxtServer.allows(webUrl)) {
-			//logger.info("Robots.txt does not allow this seed: " + pageUrl);
-		//} else {
-			frontier.schedule(webUrl);
-		//}
-	}
+	
 
 	/**
 	 * This function can called to assign a specific document id to a url. This
@@ -372,19 +324,7 @@ public class CrawlController extends Configurable {
 	 *            the document id that you want to be assigned to this URL.
 	 * 
 	 */
-	public void addSeenUrl(String url, int docId) {
-		String canonicalUrl = URLCanonicalizer.getCanonicalURL(url);
-		if (canonicalUrl == null) {
-			logger.error("Invalid Url: " + url);
-			return;
-		}
-		try {
-			docIdServer.addUrlAndDocId(canonicalUrl, docId);
-		} catch (Exception e) {
-			logger.error("Could not add seen url: " + e.getMessage());
-		}
-	}
-
+	
 	public PageFetcher getPageFetcher() {
 		return pageFetcher;
 	}
@@ -393,29 +333,13 @@ public class CrawlController extends Configurable {
 		this.pageFetcher = pageFetcher;
 	}
 
-	public RobotstxtServer getRobotstxtServer() {
-		return robotstxtServer;
-	}
+	
 
-	public void setRobotstxtServer(RobotstxtServer robotstxtServer) {
-		this.robotstxtServer = robotstxtServer;
-	}
+	
 
-	public Frontier getFrontier() {
-		return frontier;
-	}
+	
 
-	public void setFrontier(Frontier frontier) {
-		this.frontier = frontier;
-	}
-
-	public DocIDServer getDocIdServer() {
-		return docIdServer;
-	}
-
-	public void setDocIdServer(DocIDServer docIdServer) {
-		this.docIdServer = docIdServer;
-	}
+	
 
 	public Object getCustomData() {
 		return customData;
@@ -441,6 +365,6 @@ public class CrawlController extends Configurable {
 	public void shutdown() {
 		logger.info("Shutting down...");
 		this.shuttingDown = true;
-		frontier.finish();
+		
 	}
 }

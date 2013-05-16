@@ -19,20 +19,20 @@ package crawler;
 import fetcher.PageFetchResult;
 import fetcher.CustomFetchStatus;
 import fetcher.PageFetcher;
-import frontier.DocIDServer;
-import frontier.Frontier;
-import parser.HtmlParseData;
-import parser.ParseData;
+
+
+
+
 import parser.Parser;
-import robotstxt.RobotstxtServer;
-import url.WebURL;
+
+
 
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import url.URLCanonicalizer;
+
 import webcrawler.BasicCrawlController;
 
 /**
@@ -73,16 +73,16 @@ public class WebCrawler implements Runnable {
      * determine whether the crawler is allowed to crawl the content of each
      * page.
      */
-    private RobotstxtServer robotstxtServer;
+    //private RobotstxtServer robotstxtServer;
     /**
      * The DocIDServer that is used by this crawler instance to map each URL to
      * a unique docid.
      */
-    private DocIDServer docIdServer;
+    //  private DocIDServer docIdServer;
     /**
      * The Frontier object that manages the crawl queue.
      */
-    private Frontier frontier;
+  
     /**
      * Is the current crawler instance waiting for new URLs? This field is
      * mainly used by the controller to detect whether all of the crawler
@@ -100,9 +100,9 @@ public class WebCrawler implements Runnable {
     public void init(int id, CrawlController crawlController) {
         this.myId = id;
         this.pageFetcher = crawlController.getPageFetcher();
-        this.robotstxtServer = crawlController.getRobotstxtServer();
-        this.docIdServer = crawlController.getDocIdServer();
-        this.frontier = crawlController.getFrontier();
+        //this.robotstxtServer = crawlController.getRobotstxtServer();
+        //  this.docIdServer = crawlController.getDocIdServer();
+        
         this.parser = new Parser(crawlController.getConfig());
         this.myController = crawlController;
         this.isWaitingForNewURLs = false;
@@ -150,7 +150,7 @@ public class WebCrawler implements Runnable {
      * @param statusCode
      * @param statusDescription
      */
-    protected void handlePageStatusCode(WebURL webUrl, int statusCode, String statusDescription) {
+    protected void handlePageStatusCode(String webUrl, int statusCode, String statusDescription) {
         // Do nothing by default
         // Sub-classed can override this to add their custom functionality
     }
@@ -160,7 +160,7 @@ public class WebCrawler implements Runnable {
      *
      * @param webUrl
      */
-    protected void onContentFetchError(WebURL webUrl) {
+    protected void onContentFetchError(String webUrl) {
         // Do nothing by default
         // Sub-classed can override this to add their custom functionality
     }
@@ -171,7 +171,7 @@ public class WebCrawler implements Runnable {
      *
      * @param webUrl
      */
-    protected void onParseError(WebURL webUrl) {
+    protected void onParseError(String webUrl) {
         // Do nothing by default
         // Sub-classed can override this to add their custom functionality
     }
@@ -193,111 +193,58 @@ public class WebCrawler implements Runnable {
         //while (true) {
 
         // modified by Adeesha
-        List<WebURL> assignedURLs = new ArrayList<>(50);
-        isWaitingForNewURLs = true;
-        frontier.getNextURLs(50, assignedURLs);
-        isWaitingForNewURLs = false;
-        if (assignedURLs.size() == 0) {
-            if (frontier.isFinished()) {
-                return;
-            }
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            if (BasicCrawlController.isLankadeepatoday) {
-                if (!BasicCrawlController.isMainURLCrawled) {
-                    WebURL curURL = assignedURLs.get(0);
-                    // BasicCrawlController.isMainURLCrawled = true;
-                    if (curURL != null) {
-                        System.out.println("Main URL Crawling *******************");
-                        processPage(curURL);
-                        frontier.setProcessed(curURL);
-=======
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-
-            if (!BasicCrawlController.isMainURLCrawled) {
-                WebURL curURL = assignedURLs.get(0);
-               // BasicCrawlController.isMainURLCrawled = true;
-                if (curURL != null) {
-                    System.out.println("Main URL Crawling *******************");
-                    processPage(curURL);
-                    frontier.setProcessed(curURL);
-                }
-                if (myController.isShuttingDown()) {
-                    logger.info("Exiting because of controller shutdown.");
-                    return;
-                }
-
-            } else {
-
-                for (WebURL curURL : assignedURLs) {
-                    BasicCrawlController.isConetenReadEnable = true;
-                    if (curURL != null) {
-                        System.out.println("**********Crawling**********"+curURL.toString());
-                        processPage(curURL);
-                        
-                        // modified by Adeesha
-                        //remove the comment to get the original version
-                        //frontier.setProcessed(curURL);
-                        
-                        // end of modification
-<<<<<<< HEAD
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-                    }
-                    if (myController.isShuttingDown()) {
-                        logger.info("Exiting because of controller shutdown.");
-                        return;
-                    }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-                } else {
-
-                    for (WebURL curURL : assignedURLs) {
-                        BasicCrawlController.isConetenReadEnable = true;
-                        if (curURL != null) {
-                            System.out.println("**********Crawling**********" + curURL.toString());
-                            processPage(curURL);
-
-                            // modified by Adeesha
-                            //remove the comment to get the original version
-                            //frontier.setProcessed(curURL);
-
-                            // end of modification
-                        }
-                        if (myController.isShuttingDown()) {
-                            logger.info("Exiting because of controller shutdown.");
-                            return;
-                        }
-                    }
-                }
-            } else if (BasicCrawlController.isLankadeepaArchives) {
-                BasicCrawlController.isConetenReadEnable = true;
-                BasicCrawlController.isMainURLCrawled=true;
+        
+            // start crawling for lankadeepa archives 
+             if (BasicCrawlController.isLankadeepaArchives) {
+              
 
                 for (int i = 110027; i < 1000000; i++) {
-                    String pageURL = "http://www.lankadeepa.lk/index.php/articles/" +i;
-                    String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
-                    WebURL webUrl = new WebURL();
-                    webUrl.setURL(canonicalUrl);
-                    System.out.println("**********Crawling**********" + webUrl.toString());
-                    processPage(webUrl);
+                    String pageURL = "http://www.lankadeepa.lk/index.php/articles/" + i;
+                   // String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
+                   
+                    System.out.println("**********Crawling**********" + pageURL);
+                    processPage(pageURL);
 
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
+                }
+            } // start crawling for divaina archives
+            else if (BasicCrawlController.isDivainaArchives) {
+                
+
+                String month = null;
+                String date = null;
+                String news = null;
+                for (int i = 2010; i < 2014; i++) {
+
+                    for (int j = 1; j < 13; j++) {
+
+                        for (int k = 1; k < 32; k++) {
+                            for (int p = 1; p < 30; p++) {
+                                if (j < 10) {
+                                    month = "0" + j;
+
+                                }
+                                if (k < 10) {
+                                    date = "0" + k;
+                                }
+                                if (p < 10) {
+                                    news = "0" + p;
+
+                                }
+
+                                String pageURL = "http://www.divaina.com/" + i + "/" + month + "/" + date + "/news" + news + ".html";
+                                
+                              
+                                System.out.println("**********Crawling**********" + pageURL);
+                                processPage(pageURL);
+
+                            }
+                        }
+
+                    }
+
                 }
             }
-        }
+        
         // end of modification
         // }
     }
@@ -312,7 +259,7 @@ public class WebCrawler implements Runnable {
      * @return if the url should be included in the crawl it returns true,
      * otherwise false is returned.
      */
-    public boolean shouldVisit(WebURL url) {
+    public boolean shouldVisit(String url) {
         return true;
     }
 
@@ -327,7 +274,7 @@ public class WebCrawler implements Runnable {
         // Sub-classed can override this to add their custom functionality
     }
 
-    private void processPage(WebURL curURL) {
+    private void processPage(String curURL) {
         if (curURL == null) {
             return;
         }
@@ -343,198 +290,58 @@ public class WebCrawler implements Runnable {
                         if (movedToUrl == null) {
                             return;
                         }
-                        int newDocId = docIdServer.getDocId(movedToUrl);
-                        if (newDocId > 0) {
-                            // Redirect page is already seen
-                            return;
-                        }
 
-                        WebURL webURL = new WebURL();
-                        webURL.setURL(movedToUrl);
-                        webURL.setParentDocid(curURL.getParentDocid());
-                        webURL.setParentUrl(curURL.getParentUrl());
-                        webURL.setDepth(curURL.getDepth());
-                        webURL.setDocid(-1);
-                        webURL.setAnchor(curURL.getAnchor());
+
+                       // WebURL webURL = new WebURL();
+                       // webURL.setURL(movedToUrl);
+                       // webURL.setParentDocid(curURL.getParentDocid());
+                       // webURL.setParentUrl(curURL.getParentUrl());
+                       // webURL.setDepth(curURL.getDepth());
+                       // webURL.setDocid(-1);
+                       // webURL.setAnchor(curURL.getAnchor());
                         //modified by Adeesha
 //						if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
 //							webURL.setDocid(docIdServer.getNewDocID(movedToUrl));
-                        frontier.schedule(webURL);
+                      //  frontier.schedule(webURL);
 //						}
                         // modified by Adeesha
                     }
                 } else if (fetchResult.getStatusCode() == CustomFetchStatus.PageTooBig) {
-                    logger.info("Skipping a page which was bigger than max allowed size: " + curURL.getURL());
+                    logger.info("Skipping a page which was bigger than max allowed size: " + curURL);
                 }
                 return;
             }
 
-            if (!curURL.getURL().equals(fetchResult.getFetchedUrl())) {
-                if (docIdServer.isSeenBefore(fetchResult.getFetchedUrl())) {
-                    // Redirect page is already seen
-                    return;
-                }
-                curURL.setURL(fetchResult.getFetchedUrl());
-                curURL.setDocid(docIdServer.getNewDocID(fetchResult.getFetchedUrl()));
+            if (!curURL.equals(fetchResult.getFetchedUrl())) {
+
+                curURL=(fetchResult.getFetchedUrl());
+
             }
 
             Page page = new Page(curURL);
-            int docid = curURL.getDocid();
-
+          
             if (!fetchResult.fetchContent(page)) {
                 onContentFetchError(curURL);
                 return;
             }
 
-            if (!parser.parse(page, curURL.getURL())) {
+            if (!parser.parse(page, curURL)) {
                 onParseError(curURL);
                 return;
             }
 
-            ParseData parseData = page.getParseData();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-            //modified by Adeesha
-
-            if (!BasicCrawlController.isMainURLCrawled) {
-
-
-                // end of modification 
-
-                if (parseData instanceof HtmlParseData) {
-                    HtmlParseData htmlParseData = (HtmlParseData) parseData;
-
-                    List<WebURL> toSchedule = new ArrayList<>();
-                    int maxCrawlDepth = myController.getConfig().getMaxDepthOfCrawling();
-                    for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
-                        webURL.setParentDocid(docid);
-                        webURL.setParentUrl(curURL.getURL());
-                        int newdocid = docIdServer.getDocId(webURL.getURL());
-                        if (newdocid > 0) {
-                            // This is not the first time that this Url is
-                            // visited. So, we set the depth to a negative
-                            // number.
-                            webURL.setDepth((short) -1);
-                            webURL.setDocid(newdocid);
-                        } else {
-                            webURL.setDocid(-1);
-                            webURL.setDepth((short) (curURL.getDepth() + 1));
-                            if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
-                                //modified by Adeesha
-                                //  if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
-                                if (webURL.getURL().contains("articles")) {
-
-
-                                    webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
-                                    toSchedule.add(webURL);
-                                    //}
-                                }
-                                // end of modification
-                            }
-                        }
-                    }
-                    //modified by adeesha               
-
-
-                    frontier.scheduleAll(toSchedule);
-                    BasicCrawlController.isMainURLCrawled = true;
-
-
-                    // end of modification
-                }
-                try {
-                    visit(page);
-                } catch (Exception e) {
-                    logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
-                }
-                // end of If Modified by Adeesha
-=======
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-            
-            //modified by Adeesha
-            
-            if (!BasicCrawlController.isMainURLCrawled){
-                
-                
-             // end of modification 
-                
-            if (parseData instanceof HtmlParseData) {
-                HtmlParseData htmlParseData = (HtmlParseData) parseData;
-
-                List<WebURL> toSchedule = new ArrayList<>();
-                int maxCrawlDepth = myController.getConfig().getMaxDepthOfCrawling();
-                for (WebURL webURL : htmlParseData.getOutgoingUrls()) {
-                    webURL.setParentDocid(docid);
-                    webURL.setParentUrl(curURL.getURL());
-                    int newdocid = docIdServer.getDocId(webURL.getURL());
-                    if (newdocid > 0) {
-                        // This is not the first time that this Url is
-                        // visited. So, we set the depth to a negative
-                        // number.
-                        webURL.setDepth((short) -1);
-                        webURL.setDocid(newdocid);
-                    } else {
-                        webURL.setDocid(-1);
-                        webURL.setDepth((short) (curURL.getDepth() + 1));
-                        if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
-                            //modified by Adeesha
-                            //  if (shouldVisit(webURL) && robotstxtServer.allows(webURL)) {
-                            if (webURL.getURL().contains("articles")) {
-
-
-                                webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
-                                toSchedule.add(webURL);
-                                //}
-                            }
-                            // end of modification
-                        }
-                    }
-                }
-                //modified by adeesha               
-                
-                
-                    frontier.scheduleAll(toSchedule);
-                    BasicCrawlController.isMainURLCrawled=true;
-                
-                     
-                // end of modification
-            }
-            try {
-                visit(page);
-            } catch (Exception e) {
-                logger.error("Exception while running the visit method. Message: '" + e.getMessage() + "' at " + e.getStackTrace()[0]);
-            }
-            // end of If Modified by Adeesha
-<<<<<<< HEAD
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-=======
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-            }
+         
 
         } catch (Exception e) {
-            logger.error(e.getMessage() + ", while processing: " + curURL.getURL());
+            logger.error(e.getMessage() + ", while processing: " + curURL);
         } finally {
             if (fetchResult != null) {
                 fetchResult.discardContentIfNotConsumed();
             }
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 
 
-=======
-        
-        
-    
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
-=======
-        
-        
-    
->>>>>>> a3ce1c6d25e50c56be9f6a2c7fc34777a85a5731
     }
 
     public Thread getThread() {
