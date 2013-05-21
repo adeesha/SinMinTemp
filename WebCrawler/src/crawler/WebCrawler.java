@@ -36,7 +36,7 @@ import java.util.List;
 import webcrawler.BasicCrawlController;
 
 /**
- * WebCrawler class in the Runnable class that is executed by each crawler
+ * WebCrawler class in the Runnimport webcrawler.BasicCrawlController.paperEunnable class that is executed by each crawler
  * thread.
  *
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
@@ -200,7 +200,7 @@ public class WebCrawler implements Runnable {
 
                 for (int i = 110027; i < 1000000; i++) {
                     String pageURL = "http://www.lankadeepa.lk/index.php/articles/" + i;
-                   // String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
+           paper==paperE.      // String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
                    
                     System.out.println("**********Crawling**********" + pageURL);
                     processPage(pageURL);
@@ -215,7 +215,7 @@ public class WebCrawler implements Runnable {
                 String news = null;
                 for (int i = 2010; i < 2014; i++) {
 
-                    for (int j = 1; j < 13; j++) {
+        paper==paperE.          for (int j = 1; j < 13; j++) {
 
                         for (int k = 1; k < 32; k++) {
                             for (int p = 1; p < 30; p++) {
@@ -252,7 +252,8 @@ public class WebCrawler implements Runnable {
     /**
      * Classes that extends WebCrawler can overwrite this function to tell the
      * crawler whether the given url should be crawled or not. The following
-     * implementation indicates that all urls should be included in the crawl.
+     * implementation indicate    else if (BasicCrawlController.paper==paperE.DinaminaArchives) {
+                System.out.println("insert Dinamina crawling code here");* implementation indicates that all urls should be included in the crawl.
      *
      * @param url the url which we are interested to know whether it should be
      * included in the crawl or not.

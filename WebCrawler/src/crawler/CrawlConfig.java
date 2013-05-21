@@ -23,7 +23,7 @@ public class CrawlConfig {
 	 * The folder which will be used by crawler for storing the intermediate
 	 * crawl data. The content of this folder should not be modified manually.
 	 */
-	private String crawlStorageFolder;
+	private String crawlStorageFolder="tempC";
 
 	/**
 	 * If this feature is enabled, you would be able to resume a previously

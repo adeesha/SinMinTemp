@@ -23,7 +23,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 
-public class HtmlContentHandlerLankaDeepa extends HTMLContentHandler {
+public class HtmlContentHandlerDinamina extends HTMLContentHandler {
   
     
 

@@ -18,23 +18,22 @@ public class BasicCrawlController {
      * @param args the command line arguments
      */
    
-    public static boolean isLankadeepaArchives = false;
-    public static boolean isDivainaArchives = false;
-  
- 
+
+    public static enum paperE { LankadeepaArchives,DivainaArchives,DinaminaArchives}
+    public static paperE paper=paperE.DinaminaArchives;
    
 
     public static void mainCrawl(String args) throws Exception {
       
         if (args.equalsIgnoreCase("LankadeepaArchives")) {
-
-            isLankadeepaArchives = true;
+            paper=paperE.LankadeepaArchives;
         }
-       
-        if (args.equalsIgnoreCase("DivainaArchives")) {
-            isDivainaArchives = true;
+        else if (args.equalsIgnoreCase("DivainaArchives")) {
+            paper=paperE.DivainaArchives;
         }
-
+        else if (args.equalsIgnoreCase("DinaminaArchives")){
+            paper=paperE.DinaminaArchives;
+        }
       
 
         /*

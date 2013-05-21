@@ -39,6 +39,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 import webcrawler.BasicCrawlController;
+import webcrawler.BasicCrawlController.paperE;
 
 /**
  * @author Yasser Ganjisaffar <lastname at gmail dot com>
@@ -86,14 +87,14 @@ public class Parser extends Configurable {
 
         ContentHandler contentHandler = null;
 
-        if (BasicCrawlController.isLankadeepaArchives) {
+        if (BasicCrawlController.paper==paperE.LankadeepaArchives) {
             contentHandler = new HtmlContentHandlerLankaDeepa();
         }
-
-        if (BasicCrawlController.isDivainaArchives) {
-
+        else if(BasicCrawlController.paper==paperE.DivainaArchives) {
             contentHandler = new HtmlContentHandlerDivaina();
-
+        }
+        else if(BasicCrawlController.paper==paperE.DinaminaArchives) {
+            contentHandler = new HtmlContentHandlerDinamina();
         }
 
 

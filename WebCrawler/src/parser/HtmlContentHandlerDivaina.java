@@ -16,68 +16,16 @@
  */
 package parser;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import webcrawler.BasicCrawlController;
-import webcrawler.SQLCommunicator;
 
-public class HtmlContentHandlerDivaina extends ContentHandler {
+public class HtmlContentHandlerDivaina extends HTMLContentHandler {
 
-    private final int MAX_ANCHOR_LENGTH = 100;
-
-    private enum Element {
-
-        A, AREA, LINK, IFRAME, FRAME, EMBED, IMG, BASE, META, BODY, P, SPAN,HTML
-    }
-
-    private static class HtmlFactory {
-
-        private static Map<String, Element> name2Element;
-
-        static {
-            name2Element = new HashMap<>();
-            for (Element element : Element.values()) {
-                name2Element.put(element.toString().toLowerCase(), element);
-            }
-        }
-
-        public static Element getElement(String name) {
-            return name2Element.get(name);
-        }
-    }
-    private String base;
     private String metaRefresh;
-    private String metaLocation;
-    private boolean isWithinBodyElement;
-    private StringBuilder bodyText;
-    
-    private StringBuilder databaseAuthor;
-    private StringBuilder databaseDate;
-            private StringBuilder databaseTopic;
-                    private StringBuilder databaseContent;
-    
-    
-  
-    private boolean anchorFlag = false;
-    private StringBuilder anchorText = new StringBuilder();
+    private String metaLocation;    
     private boolean isEntryStarted;
-    private boolean isParagraphStarted;
-    private boolean isDateAndAuthorDiscovered;
-    private boolean isTopicDiscovered;
-    private boolean isWithinElement;
-    private boolean isDatabasesendOK;
 
     public HtmlContentHandlerDivaina() {
         isEntryStarted = false;
@@ -265,117 +213,5 @@ public class HtmlContentHandlerDivaina extends ContentHandler {
         
     }
 
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        Element element = HtmlFactory.getElement(localName);
-
-        if (isWithinElement) {
-            isWithinElement = false;
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
-               writer.newLine();
-                writer.flush();
-                writer.close();
-
-            } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandlerDivaina.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        if (element == Element.A || element == Element.AREA || element == Element.LINK) {
-            anchorFlag = false;
-            
-        }
-        // comment for commit 2013.04.26
-        if (element == Element.BODY) {
-            isWithinBodyElement = false;
-            if(isDatabasesendOK){
-            SQLCommunicator.communicate(databaseAuthor.toString(), databaseDate.toString(), databaseTopic.toString(), databaseContent.toString());
-            }
-            }
-      
-    }
-    
-    @Override
-    public void characters(char ch[], int start, int length) throws SAXException {
-        // modified by Adeesha	
-
-
-        if (isTopicDiscovered) {
-            isTopicDiscovered = false;
-            BufferedWriter writer = null;
-            try {
-                databaseTopic.append(ch, start, length);
-                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
-                writer.write("Topic   : ");
-                writer.write(new String(ch, start, length));
-
-                writer.flush();
-                writer.close();
-
-            } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandlerDivaina.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if (isDateAndAuthorDiscovered) {
-            isDateAndAuthorDiscovered = false;
-            
-            String tempauthoranddate = new String(ch);
-               String[] tempauthoranddatearray = tempauthoranddate.split("\\|");
-            
-            databaseDate.append(tempauthoranddatearray[0], start, tempauthoranddatearray[0].length());
-            databaseAuthor.append(tempauthoranddatearray[1], start, length-tempauthoranddatearray[0].length());
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
-                writer.write("Date and Author   : ");
-                writer.write(new String(ch, start, length));
-
-                writer.flush();
-                writer.close();
-
-            } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandlerDivaina.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        if (isParagraphStarted) {
-            databaseContent.append(ch, start, length);
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter("./output1.txt", true));
-
-                writer.write(new String(ch, start, length));
-               
-                writer.flush();
-                writer.close();
-
-            } catch (IOException ex) {
-                Logger.getLogger(HtmlContentHandlerDivaina.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            //isParagraphStarted=false;
-        }
-
-        // end of modification
-
-
-        if (isWithinBodyElement) {
-            bodyText.append(ch, start, length);
-
-            if (anchorFlag) {
-                anchorText.append(new String(ch, start, length));
-            }
-        }
-    }
-    @Override
-    public String getBodyText() {
-        return bodyText.toString();
-    }
-    
-      @Override
-    public String getBaseUrl() {
-        return base;
-    }
+  
 }
