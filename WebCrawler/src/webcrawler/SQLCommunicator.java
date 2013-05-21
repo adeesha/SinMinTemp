@@ -17,14 +17,14 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author adeesha
+ * @author Adeesha
  */
 public class SQLCommunicator {
     
     
     
     public static void communicate(String author, String date, String topic, String content){
-     Connection con = null;
+        Connection con = null;
         Statement st = null;
         ResultSet rs = null;
 
@@ -35,10 +35,7 @@ public class SQLCommunicator {
         try {
             con = DriverManager.getConnection(url, user, password);
             st =  con.createStatement();
-         
-           st = con.createStatement();
-st.executeUpdate("INSERT INTO Lankadeepa (Author,Date , Topic,Content)\n" +
-"VALUES ('"+author+"','"+date+"','"+ topic+"','"+content+"')");
+            st.executeUpdate("INSERT INTO Lankadeepa (Author,Date,Topic,Content)\n" +"VALUES ('"+author+"','"+date+"','"+ topic+"','"+content+"')");
            // if (rs.next()) {
                // System.out.println(rs.getString(1));
            // }
