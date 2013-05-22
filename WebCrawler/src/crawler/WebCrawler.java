@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import webcrawler.BasicCrawlController;
+import webcrawler.BasicCrawlController.paperE;
 
 /**
  * WebCrawler class in the Runnimport webcrawler.BasicCrawlController.paperEunnable class that is executed by each crawler
@@ -195,19 +196,19 @@ public class WebCrawler implements Runnable {
         // modified by Adeesha
         
             // start crawling for lankadeepa archives 
-             if (BasicCrawlController.isLankadeepaArchives) {
+             if (BasicCrawlController.paper==paperE.LankadeepaArchives) {
               
 
                 for (int i = 110027; i < 1000000; i++) {
                     String pageURL = "http://www.lankadeepa.lk/index.php/articles/" + i;
-           paper==paperE.      // String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
+                 // String canonicalUrl = URLCanonicalizer.getCanonicalURL(pageURL);
                    
                     System.out.println("**********Crawling**********" + pageURL);
                     processPage(pageURL);
 
                 }
             } // start crawling for divaina archives
-            else if (BasicCrawlController.isDivainaArchives) {
+            else if (BasicCrawlController.paper==paperE.DivainaArchives) {
                 
 
                 String month = null;
@@ -215,7 +216,7 @@ public class WebCrawler implements Runnable {
                 String news = null;
                 for (int i = 2010; i < 2014; i++) {
 
-        paper==paperE.          for (int j = 1; j < 13; j++) {
+                 for (int j = 1; j < 13; j++) {
 
                         for (int k = 1; k < 32; k++) {
                             for (int p = 1; p < 30; p++) {
@@ -244,10 +245,14 @@ public class WebCrawler implements Runnable {
 
                 }
             }
+            else if(BasicCrawlController.paper==paperE.DinaminaArchives){
+                System.out.println("DinaminaArchives");
+            }
+    }
         
         // end of modification
         // }
-    }
+    
 
     /**
      * Classes that extends WebCrawler can overwrite this function to tell the
