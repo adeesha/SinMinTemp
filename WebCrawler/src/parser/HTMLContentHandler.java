@@ -24,6 +24,7 @@ public class HTMLContentHandler extends ContentHandler{
     protected boolean anchorFlag = false;
     
     protected String base;
+    protected String table;
     
     protected boolean isWithinElement=false;
     protected boolean isWithinBodyElement=false;
@@ -89,7 +90,7 @@ public class HTMLContentHandler extends ContentHandler{
         if (element == Element.BODY) {
             isWithinBodyElement = false;
             if (isDatabasesendOK) {
-                SQLCommunicator.communicate(databaseAuthor.toString(), databaseDate.toString(), databaseTopic.toString(), databaseContent.toString());
+                SQLCommunicator.InsertInToTable(table,new String[]{databaseAuthor.toString(), databaseDate.toString(), databaseTopic.toString(), databaseContent.toString()});
             }
         }
 

@@ -25,8 +25,10 @@ import org.xml.sax.SAXException;
 
 public class HtmlContentHandlerLankaDeepa extends HTMLContentHandler {
   
+    public HtmlContentHandlerLankaDeepa(){
+        table="Lankadeepa";
+    }
     
-
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         Element element = HtmlFactory.getElement(localName); 

@@ -20,28 +20,35 @@ import org.apache.log4j.Logger;
  * @author Adeesha
  */
 public class SQLCommunicator {
-    
-    
-    
-    public static void communicate(String author, String date, String topic, String content){
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
+        private static Connection con = null;
+        private static Statement st = null;
+        private static ResultSet rs = null;
 
-        String url = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8";
-        String user = "root";
-        String password = "";
-
+        private static String database="test";
+        private static String url = "jdbc:mysql://localhost:3306/"+database+"?useUnicode=true&characterEncoding=utf-8";
+        private static String user = "root";
+        private static String password = "";
+    
+    
+    public static void InsertInToTable(String table,String[] values){   
         try {
             con = DriverManager.getConnection(url, user, password);
             st =  con.createStatement();
-            st.executeUpdate("INSERT INTO Lankadeepa (Author,Date,Topic,Content)\n" +"VALUES ('"+author+"','"+date+"','"+ topic+"','"+content+"')");
+            String statement="INSERT INTO "+table+" VALUES ('";
+            for (int i = 0; i < values.length; i++) {
+                statement+=values[i];
+                if(i<(values.length-1)){                    
+                    statement+=",";
+                }
+            }
+            statement+="')";
+            st.executeUpdate(statement);
            // if (rs.next()) {
                // System.out.println(rs.getString(1));
            // }
 
         } catch (SQLException ex) {
-            Logger lgr = Logger.getLogger(Version.class.getName());
+            //Logger lgr = Logger.getLogger(Version.class.getName());
             //lgr.log(Level.SEVERE, ex.getMessage(), ex);
 
         } finally {
@@ -57,7 +64,7 @@ public class SQLCommunicator {
                 }
 
             } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(Version.class.getName());
+                //Logger lgr = Logger.getLogger(Version.class.getName());
               //  lgr.log(Level.WARNING, ex.getMessage(), ex);
             }
         }
