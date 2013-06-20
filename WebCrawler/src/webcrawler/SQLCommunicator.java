@@ -8,6 +8,7 @@ import com.sun.corba.se.impl.util.Version;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,27 +28,31 @@ public class SQLCommunicator {
         private static String database="test";
         private static String url = "jdbc:mysql://localhost:3306/"+database+"?useUnicode=true&characterEncoding=utf-8";
         private static String user = "root";
-        private static String password = "";
+        private static String password = "fun123";
     
     
     public static void InsertInToTable(String table,String[] values){   
-        try {
+        try {            
             con = DriverManager.getConnection(url, user, password);
             st =  con.createStatement();
-            String statement="INSERT INTO "+table+" VALUES ('";
+            
+            String insertSQL = "INSERT INTO "+table+"  VALUES (";
             for (int i = 0; i < values.length; i++) {
-                statement+=values[i];
-                if(i<(values.length-1)){                    
-                    statement+=",";
+                insertSQL = insertSQL +"?";
+                if(i<values.length-1){
+                    insertSQL+=",";
                 }
             }
-            statement+="')";
-            st.executeUpdate(statement);
-           // if (rs.next()) {
-               // System.out.println(rs.getString(1));
-           // }
+            insertSQL+=")";
+            PreparedStatement preparedStatement = con.prepareStatement(insertSQL);
+            //System.out.println(insertSQL);
+            for (int i = 0; i < values.length; i++) {
+                preparedStatement.setString(i+1, values[i]);
+            }
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
+            //ex.printStackTrace();
             //Logger lgr = Logger.getLogger(Version.class.getName());
             //lgr.log(Level.SEVERE, ex.getMessage(), ex);
 
@@ -64,6 +69,7 @@ public class SQLCommunicator {
                 }
 
             } catch (SQLException ex) {
+                ex.printStackTrace();
                 //Logger lgr = Logger.getLogger(Version.class.getName());
               //  lgr.log(Level.WARNING, ex.getMessage(), ex);
             }
